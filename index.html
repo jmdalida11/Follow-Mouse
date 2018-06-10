@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Follow Mouse</title>
+    <style type="text/css">
+        body{
+            margin: 0px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="mycanvas"></canvas>
+    <script type="text/javascript">
+        
+        const canvas = document.getElementById('mycanvas');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const context = canvas.getContext('2d');
+
+        class Box{
+            constructor(x, y, w, h){
+                this.x = x;
+                this.y = y;
+                this.h = h;
+                this.w = w;
+                this.velx = 0;
+                this.vely = 0;
+                this.accx = 0;
+                this.accy = 0;
+            }
+
+            moveToTarget(target){
+                this.accx = (target.x - this.x) * 0.1;
+                this.accy = (target.y - this.y) * 0.1;
+            }
+
+            render(){
+                this.velx += this.accx;
+                this.vely += this.accy;
+
+                if(this.velx > 3) {this.velx = 3}
+                if(this.vely > 3) {this.vely = 3}
+
+                if(this.velx < -3) {this.velx = -3}
+                if(this.vely < -3) {this.vely = -3}
+
+                this.x += this.velx;
+                this.y += this.vely;
+
+            }
+
+            draw(context){
+                context.fillStyle = 'yellow'
+                context.fillRect(this.x, this.y, this.w, this.h)
+            }
+
+        }
+
+        class Target{
+            constructor(x, y, size){
+                this.x = x;
+                this.y = y;
+                this.size = size;
+            }
+        };
+
+        var box = new Box(50, 50, 25, 25);
+        var target = new Target(0, 0, 25)
+
+        function render(){
+            box.render();
+            box.moveToTarget(target)
+            
+        }
+
+        function draw(){
+            context.fillStyle = 'black';
+            context.fillRect(0, 0, canvas.width, canvas.height);
+
+            //context.fillStyle = 'green'
+            //context.fillRect(target.x, target.y, target.size, target.size)
+
+            box.draw(context);
+        }
+
+        window.onmousemove = function(event){
+            mousepos = getMousePos(canvas, event)
+            target.x = mousepos.x
+            target.y = mousepos.y
+        }
+
+        function getMousePos(canvas, evt) {
+            var rect = canvas.getBoundingClientRect();
+            return {
+              x: evt.clientX - rect.left,
+              y: evt.clientY - rect.top
+            };
+        }
+
+
+        setInterval(function(){
+            render();
+            draw();
+        }, 1000/30)
+
+    </script>
+</body>
+</html>
